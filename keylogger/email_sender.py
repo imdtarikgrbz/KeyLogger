@@ -1,25 +1,23 @@
 import smtplib,ssl
-import psw
+import os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
-from config import DEBUG
+from config import DEBUG,SMTP_SERVER,SMTP_PORT,USERNAME,PASSWORD
+if DEBUG:
+    import psw
 
 class Email:
     def __init__(self) -> None:
-        self.SMTP_SERVER= "smtp.gmail.com"  # Replace with your SMTP server
-        self.SMTP_PORT = 587  # Use 465 for SSL or 587 for TLS
-        self.USERNAME = psw.email  # Your email login
-        self.PASSWORD = psw.psw  # Your email password
+        if DEBUG:
+            self.USERNAME = psw.email  # Your email login
+            self.PASSWORD = psw.psw  # Your email password
+        else:
+            self.USERNAME = USERNAME
+            self.PASSWORD = PASSWORD
         
     def send_email(self,*args:str,sender_email:str,receiver_email:str,subject:str,body:str) -> None:
-        self.sender_email = sender_email
-        self.receiver_email = receiver_email
-        self.subject = subject
-        self.body = body
-        self.args = args
-        
         message = MIMEMultipart()
         message["From"] = sender_email
         message["To"] = receiver_email
@@ -30,34 +28,33 @@ class Email:
         
         # Attach file
         if args:
-            for file in args:
-                with open(file, "rb") as file:
+            for file_path in args:
+                with open(file_path, "rb") as attachment:
                     part = MIMEBase("application", "octet-stream")
-                    part.set_payload(file.read())
+                    part.set_payload(attachment.read())
 
                 encoders.encode_base64(part)  # Encode to base64
-                part.add_header("Content-Disposition", f"attachment; filename={file}")  # Manually set file name
+                part.add_header("Content-Disposition", f"attachment; filename={os.path.basename(file_path)}")  # Manually set file name
                 message.attach(part)  # Attach the file to the email
 
         context = ssl.create_default_context()
         # Send email
         try:
-            with smtplib.SMTP(self.SMTP_SERVER, self.SMTP_PORT) as server:
+            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
                 server.ehlo()  # Can be omitted
                 server.starttls(context=context)
                 server.ehlo()  # Can be omitted
                 server.login(self.USERNAME, self.PASSWORD)
                 server.sendmail(sender_email, receiver_email, message.as_string())
-        except TimeoutError:
+        except Exception as e:
             if DEBUG:
-                print("Timeout Error raised")
-            self.send_email(self.args,self.sender_email,self.receiver_email,self.subject,self.body) #! Must be looked
+                print(f"Error sending email: {e}")
 
 
 
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and DEBUG:
     app = Email()
     app.send_email(
         "./LOGS/logs.log",
