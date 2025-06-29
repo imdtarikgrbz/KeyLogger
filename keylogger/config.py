@@ -1,4 +1,4 @@
-DEBUG = True
+DEBUG = False
 
 # === LOGS SETTINGS ===
 LOGS_DIR = "./LOGS" # Directory to store logs
@@ -13,4 +13,4 @@ PASSWORD = "" # --------> Your email password that you get from 'https://myaccou
 SENDER_EMAIL = "" 
 RECEIVER_EMAIL = ""
 #! WARNING: Do NOT commit your real credentials to version control!
-LOG_INTERVAL = 30 # Seconds
+LOG_INTERVAL = 5 * 60 # Seconds

